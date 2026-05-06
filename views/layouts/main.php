@@ -1,0 +1,105 @@
+<?php
+
+/* @var $this \yii\web\View */
+/* @var $content string */
+
+use app\widgets\Alert;
+use hscstudio\mimin\components\Mimin;
+use yii\helpers\Html;
+use yii\bootstrap\Nav;
+use yii\bootstrap\NavBar;
+use yii\widgets\Breadcrumbs;
+use app\assets\AppAsset;
+
+AppAsset::register($this);
+?>
+<?php $this->beginPage() ?>
+<!DOCTYPE html>
+<html lang="<?= Yii::$app->language ?>">
+<head>
+    <meta charset="<?= Yii::$app->charset ?>">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <?php $this->registerCsrfMetaTags() ?>
+    <title><?= Html::encode($this->title) ?></title>
+    <?php $this->head() ?>
+</head>
+<body>
+<?php $this->beginBody() ?>
+
+<div class="wrap">
+    <?php
+    NavBar::begin([
+        'brandLabel' => Yii::$app->name,
+        'brandUrl' => Yii::$app->homeUrl,
+        'options' => [
+            'class' => 'navbar-inverse navbar-fixed-top',
+        ],
+    ]);
+    $menuItems = [
+        ['label' => 'Home', 'url' => ['/site/index']],
+    ];
+
+    if (\Yii::$app->user->isGuest){
+        $menuItems[] = ['label' => 'Login', 'url' => ['/site/login']];
+        $menuItems[] = ['label' => 'Signup', 'url' => ['/site/signup']];
+    }
+    else{
+        $menuItems[] = ['label' => 'Manage User', 'items' => [
+            ['label' => 'Route', 'url' => ['/mimin/route']],
+            ['label' => 'Role', 'url' => ['/mimin/role']],
+            ['label' => 'User', 'url' => ['/mimin/user']],
+            ['label' => 'Setting User Unit', 'url' => ['/user-unit']],
+        ]];
+        $menuItems[] = ['label' => 'Admin Report', 'url' => ['/admin-report/index']];
+        $menuItems[] = ['label' => 'Unit', 'url' => ['/unit/index']];
+
+        $menuItems[] = ['label' => 'K3RS', 'items' => [
+            ['label' => 'Pelaporan K3RS', 'url' => ['/k3rslap']],
+            ['label' => 'Jenis Insiden', 'url' => ['/k3rsjenis']],
+            ['label' => 'Rekap K3RS', 'url' => ['/k3rsrekap']],
+        ]];
+
+        $menuItems[] = ['label' => 'Profile', 'items' => [
+            ['label' => 'Ganti Password', 'url' => ['/user/change-password']],
+            ['label' => 'User Profile', 'url' => ['/user/update']],
+        ]];
+        $menuItems[] = [
+            'label' => 'Logout (' . \Yii::$app->user->identity->username . ')',
+            'url' => ['/site/logout'],
+            'linkOptions' => ['data-method' => 'post']
+        ];
+    }
+
+    $menuItems = Mimin::filterMenu($menuItems);
+    // in other case maybe You want ensure same of route so You can add parameter strict true
+    // $menuItems = Mimin::filterMenu($menuItems,true);
+
+    echo Nav::widget([
+        'options' => ['class' => 'navbar-nav navbar-right'],
+        'items' => $menuItems,
+    ]);
+    NavBar::end();
+    ?>
+
+    <div class="container">
+        <?= Breadcrumbs::widget([
+            'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+        ]) ?>
+        <?= Alert::widget() ?>
+        <?= $content ?>
+    </div>
+</div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="pull-left">&copy; Cipto@RSUD_TJOKRONEGORO_PWR <?= date('Y') ?></p>
+
+        <p class="pull-right"><?= Yii::powered() ?></p>
+    </div>
+</footer>
+
+<?php $this->endBody() ?>
+</body>
+</html>
+<?php $this->endPage() ?>
