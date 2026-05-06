@@ -82,7 +82,7 @@ class UserUnit extends \yii\db\ActiveRecord
         return $this->hasOne(Unit::className(), ['id' => 'id_unit']);
     }
 
-    public function getUnits($id_user)
+    public static function getUnits($id_user)
     {
         $findUserUnit = [];
         $userCek = Yii::$app->db
