@@ -91,7 +91,7 @@ class K3rsController extends \yii\web\Controller
 					$response = json_decode($body, true);
 				}
 
-				if (!$response['ok']) {
+				if (!$response->ok) {
 					Yii::$app->session->setFlash('error',$response['description']);
 				}
 				else{
