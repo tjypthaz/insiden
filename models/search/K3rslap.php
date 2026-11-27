@@ -17,8 +17,8 @@ class K3rslap extends K3rslapModel
     public function rules()
     {
         return [
-            [['id', 'unitTerlapor', 'jenisInsiden', 'publish', 'createdBy', 'modifiedBy'], 'integer'],
-            [['namaTerlapor', 'tglJamKejadian', 'kronologis', 'tindakanKejadian', 'penerimaLaporan', 'tglPenerima', 'createdDate', 'modifiedDate'], 'safe'],
+            [['id', 'jenisInsiden', 'publish', 'createdBy', 'modifiedBy'], 'integer'],
+            [['namaTerlapor', 'statusKorban', 'lokasiKejadian', 'tglJamKejadian', 'kronologis', 'tindakanKejadian', 'penerimaLaporan', 'tglPenerima', 'createdDate', 'modifiedDate'], 'safe'],
         ];
     }
 
@@ -59,7 +59,7 @@ class K3rslap extends K3rslapModel
         // grid filtering conditions
         $query->andFilterWhere([
             'id' => $this->id,
-            'unitTerlapor' => $this->unitTerlapor,
+            'statusKorban' => $this->statusKorban,
             'tglJamKejadian' => $this->tglJamKejadian,
             'jenisInsiden' => $this->jenisInsiden,
             'tglPenerima' => $this->tglPenerima,
@@ -71,6 +71,7 @@ class K3rslap extends K3rslapModel
         ]);
 
         $query->andFilterWhere(['like', 'namaTerlapor', $this->namaTerlapor])
+            ->andFilterWhere(['like', 'lokasiKejadian', $this->lokasiKejadian])
             ->andFilterWhere(['like', 'kronologis', $this->kronologis])
             ->andFilterWhere(['like', 'tindakanKejadian', $this->tindakanKejadian])
             ->andFilterWhere(['like', 'penerimaLaporan', $this->penerimaLaporan]);

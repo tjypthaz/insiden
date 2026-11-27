@@ -16,7 +16,12 @@
     <tr>
         <td>&nbsp;</td>
         <td>UNIT KERJA</td>
-        <td>: <?=$data->unit->nama?></td>
+        <td>: <?=$data->lokasiKejadian?></td>
+    </tr>
+    <tr>
+        <td>&nbsp;</td>
+        <td>STATUS KORBAN</td>
+        <td>: <?=$data->getStatusKorbanLabel()?></td>
     </tr>
 </table>
 <table class="table">

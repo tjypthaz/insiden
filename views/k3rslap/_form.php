@@ -15,11 +15,13 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'namaTerlapor')->textInput(['maxlength' => true]) ?>
 
     <?php
-    $listUnit = \app\models\Unit::getUnits();
+    $listStatusKorban = \app\models\K3rslap::getStatusKorbans();
     ?>
-    <?= $form->field($model, 'unitTerlapor')->dropDownList($listUnit,[
-            'prompt' => "Pilih Unit Terlapor"
+    <?= $form->field($model, 'statusKorban')->dropDownList($listStatusKorban,[
+            'prompt' => "Pilih Status Korban"
     ]) ?>
+
+    <?= $form->field($model, 'lokasiKejadian')->textInput(['maxlength' => true,'placeholder' => 'Lokasi Terjadinya Insiden']) ?>
 
     <?= $form->field($model, 'tglJamKejadian')->widget(\dosamigos\datetimepicker\DateTimePicker::className(),[
         'size' => 'ms',

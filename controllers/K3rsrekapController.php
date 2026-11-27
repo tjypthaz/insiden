@@ -22,7 +22,9 @@ class K3rsrekapController extends \yii\web\Controller
         $result = [];
         if($model->load(Yii::$app->request->post())){
             // do somenthing with model
-            $sql = "SELECT a.`unitTerlapor`,a.`tglJamKejadian`,a.`jenisInsiden`
+            // unitTerlapor sudah dihapus dari tabel k3rslap (diganti lokasiKejadian),
+            // sehingga rekap dikelompokkan berdasarkan statusKorban.
+            $sql = "SELECT a.`statusKorban`,a.`tglJamKejadian`,a.`jenisInsiden`
                 FROM `k3rslap` a
                 WHERE a.`publish` = 1 AND YEAR(a.`tglJamKejadian`) = :tahun";
 
@@ -131,82 +133,49 @@ class K3rsrekapController extends \yii\web\Controller
                 }
             }
             else{
-                $list = Unit::find()->where(['publish' => 1])->all();
-                foreach ($list as $item){
+                // Daftar unit sudah tidak tersedia (kolom unitTerlapor dihapus),
+                // rekap per status korban memakai daftar pilihan dari model.
+                $list = K3rslap::getStatusKorbans();
+                foreach ($list as $idStatus => $labelStatus){
                     $jan = 0;$feb = 0;$mar = 0;$apr = 0;$mei = 0;$jun = 0;
                     $jul = 0;$ags = 0;$sep = 0;$okt = 0;$nov = 0;$des = 0;
                     if($datas){
                         foreach ($datas as $data){
-                            if($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 1){
-                                $jan++;
+                            if($data['statusKorban'] != $idStatus){
+                                continue;
                             }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 2){
-                                $feb++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 3){
-                                $mar++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 4){
-                                $apr++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 5){
-                                $mei++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 6){
-                                $jun++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 7){
-                                $jul++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 8){
-                                $ags++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 9){
-                                $sep++;
-                            }
-                            elseif($data['unitTerlapor'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 10){
-                                $okt++;
-                            }
-                            elseif($data['jenisInsiden'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 11){
-                                $nov++;
-                            }elseif($data['jenisInsiden'] == $item->id && date('m',strtotime($data['tglJamKejadian'])) == 12){
-                                $des++;
+                            $bulan = (int) date('n',strtotime($data['tglJamKejadian']));
+                            switch ($bulan) {
+                                case 1: $jan++; break;
+                                case 2: $feb++; break;
+                                case 3: $mar++; break;
+                                case 4: $apr++; break;
+                                case 5: $mei++; break;
+                                case 6: $jun++; break;
+                                case 7: $jul++; break;
+                                case 8: $ags++; break;
+                                case 9: $sep++; break;
+                                case 10: $okt++; break;
+                                case 11: $nov++; break;
+                                case 12: $des++; break;
                             }
                         }
-                        $result[] = [
-                            'item' => $item->nama,
-                            'jan' => $jan,
-                            'feb' => $feb,
-                            'mar' => $mar,
-                            'apr' => $apr,
-                            'mei' => $mei,
-                            'jun' => $jun,
-                            'jul' => $jul,
-                            'ags' => $ags,
-                            'sep' => $sep,
-                            'okt' => $okt,
-                            'nov' => $nov,
-                            'des' => $des,
-                        ];
                     }
-                    else{
-                        $result[] = [
-                            'item' => $item->nama,
-                            'jan' => $jan,
-                            'feb' => $feb,
-                            'mar' => $mar,
-                            'apr' => $apr,
-                            'mei' => $mei,
-                            'jun' => $jun,
-                            'jul' => $jul,
-                            'ags' => $ags,
-                            'sep' => $sep,
-                            'okt' => $okt,
-                            'nov' => $nov,
-                            'des' => $des,
-                        ];
-                    }
-
+                    $result[] = [
+                        'item' => $labelStatus,
+                        'jan' => $jan,
+                        'feb' => $feb,
+                        'mar' => $mar,
+                        'apr' => $apr,
+                        'mei' => $mei,
+                        'jun' => $jun,
+                        'jul' => $jul,
+                        'ags' => $ags,
+                        'sep' => $sep,
+                        'okt' => $okt,
+                        'nov' => $nov,
+                        'des' => $des,
+                    ];
                 }
             }
         }
@@ -241,7 +210,7 @@ class K3rsrekapController extends \yii\web\Controller
                     ?><th>Jenis Insiden</th><?php
                 }
                 else{
-                    ?><th>Nama Unit</th><?php
+                    ?><th>Status Korban</th><?php
                 }
 
                 if($periode == 1 || $periode == 2 || $periode == 6){

@@ -29,12 +29,13 @@ $this->params['breadcrumbs'][] = $this->title;
             //'id',
             'namaTerlapor',
             [
-                'attribute' => 'unitTerlapor',
+                'attribute' => 'statusKorban',
+                'filter' => \app\models\K3rslap::getStatusKorbans(),
                 'value' => function($model){
-                    return $model->unit->nama;
+                    return $model->getStatusKorbanLabel();
                 }
             ],
-            //'unitTerlapor',
+            'lokasiKejadian',
             'tglJamKejadian',
             [
                 'attribute' => 'jenisInsiden',

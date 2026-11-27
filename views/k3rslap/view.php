@@ -37,7 +37,13 @@ $this->params['breadcrumbs'][] = $this->title;
         'attributes' => [
             'id',
             'namaTerlapor',
-            'unit.nama',
+            [
+                'attribute' => 'statusKorban',
+                'value' => function($model){
+                    return $model->getStatusKorbanLabel();
+                }
+            ],
+            'lokasiKejadian',
             'tglJamKejadian',
             'jenis.nama',
             [

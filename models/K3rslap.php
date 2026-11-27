@@ -3,13 +3,15 @@
 namespace app\models;
 
 use Yii;
+use yii\helpers\ArrayHelper;
 
 /**
  * This is the model class for table "k3rslap".
  *
  * @property int $id
  * @property string $namaTerlapor
- * @property int $unitTerlapor
+ * @property string $statusKorban 1:karyawan;2:outsource;3:magang;4:tamu;5:pengunjung;6:tenant
+ * @property string $lokasiKejadian
  * @property string $tglJamKejadian
  * @property int $jenisInsiden
  * @property string $kronologis
@@ -22,11 +24,22 @@ use Yii;
  * @property int|null $modifiedBy
  * @property string|null $modifiedDate
  *
- * @property Unit $unitTerlapor0
  * @property K3rsjenis $jenisInsiden0
  */
 class K3rslap extends \yii\db\ActiveRecord
 {
+    /**
+     * Pilihan untuk kolom `statusKorban`.
+     * Mengikuti komentar kolom pada tabel k3rslap:
+     * 1:karyawan;2:outsource;3:magang;4:tamu;5:pengunjung;6:tenant
+     */
+    const STATUS_KARYAWAN = '1';
+    const STATUS_OUTSOURCE = '2';
+    const STATUS_MAGANG = '3';
+    const STATUS_TAMU = '4';
+    const STATUS_PENGUNJUNG = '5';
+    const STATUS_TENANT = '6';
+
     /**
      * {@inheritdoc}
      */
@@ -36,17 +49,47 @@ class K3rslap extends \yii\db\ActiveRecord
     }
 
     /**
+     * Daftar pilihan status korban.
+     *
+     * Mirip dengan pola K3rsjenis::getJeniss():
+     * - tanpa argumen -> mengembalikan seluruh array [kode => label]
+     * - dengan argumen -> mengembalikan label untuk kode tersebut
+     *
+     * @param string|null $id
+     * @return array|string|null
+     */
+    public static function getStatusKorbans($id = null)
+    {
+        $list = [
+            self::STATUS_KARYAWAN  => 'Karyawan',
+            self::STATUS_OUTSOURCE => 'Outsource',
+            self::STATUS_MAGANG    => 'Magang',
+            self::STATUS_TAMU      => 'Tamu',
+            self::STATUS_PENGUNJUNG => 'Pengunjung',
+            self::STATUS_TENANT    => 'Tenant',
+        ];
+
+        if ($id === null) {
+            return $list;
+        }
+
+        return isset($list[$id]) ? $list[$id] : null;
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function rules()
     {
         return [
-            [['namaTerlapor', 'unitTerlapor', 'tglJamKejadian', 'jenisInsiden', 'kronologis', 'tindakanKejadian', 'createdBy', 'createdDate'], 'required'],
-            [['unitTerlapor', 'jenisInsiden', 'penerimaLaporan', 'publish', 'modifiedBy'], 'integer'],
+            [['namaTerlapor', 'statusKorban', 'lokasiKejadian', 'tglJamKejadian', 'jenisInsiden', 'kronologis', 'tindakanKejadian', 'createdBy', 'createdDate'], 'required'],
+            [['jenisInsiden', 'penerimaLaporan', 'publish', 'modifiedBy'], 'integer'],
             [['tglJamKejadian', 'tglPenerima', 'createdDate', 'modifiedDate'], 'safe'],
             [['kronologis', 'tindakanKejadian'], 'string'],
             [['namaTerlapor', 'createdBy'], 'string', 'max' => 150],
-            [['unitTerlapor'], 'exist', 'skipOnError' => true, 'targetClass' => Unit::className(), 'targetAttribute' => ['unitTerlapor' => 'id']],
+            [['lokasiKejadian'], 'string', 'max' => 100],
+            [['statusKorban'], 'string', 'max' => 1],
+            [['statusKorban'], 'in', 'range' => array_keys(self::getStatusKorbans())],
             [['jenisInsiden'], 'exist', 'skipOnError' => true, 'targetClass' => K3rsjenis::className(), 'targetAttribute' => ['jenisInsiden' => 'id']],
         ];
     }
@@ -59,7 +102,8 @@ class K3rslap extends \yii\db\ActiveRecord
         return [
             'id' => 'ID',
             'namaTerlapor' => 'Nama Terlapor',
-            'unitTerlapor' => 'Unit Terlapor',
+            'statusKorban' => 'Status Korban',
+            'lokasiKejadian' => 'Lokasi Kejadian',
             'tglJamKejadian' => 'Tanggal Jam Kejadian',
             'jenisInsiden' => 'Jenis Insiden',
             'kronologis' => 'Kronologis Insiden',
@@ -75,13 +119,13 @@ class K3rslap extends \yii\db\ActiveRecord
     }
 
     /**
-     * Gets query for [[UnitTerlapor0]].
+     * Label status korban untuk record ini.
      *
-     * @return \yii\db\ActiveQuery
+     * @return string|null
      */
-    public function getUnit()
+    public function getStatusKorbanLabel()
     {
-        return $this->hasOne(Unit::className(), ['id' => 'unitTerlapor']);
+        return self::getStatusKorbans($this->statusKorban);
     }
 
     /**

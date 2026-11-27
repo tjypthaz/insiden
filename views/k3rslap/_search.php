@@ -22,7 +22,9 @@ use yii\widgets\ActiveForm;
 
     <?= $form->field($model, 'namaTerlapor') ?>
 
-    <?= $form->field($model, 'unitTerlapor') ?>
+    <?= $form->field($model, 'statusKorban')->dropDownList(\app\models\K3rslap::getStatusKorbans(), ['prompt' => '']) ?>
+
+    <?= $form->field($model, 'lokasiKejadian') ?>
 
     <?= $form->field($model, 'tglJamKejadian') ?>
 

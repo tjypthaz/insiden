@@ -15,7 +15,7 @@ $this->title = "Rekap K3RS";
     <?php
     $listMethod = [
         1 => 'Jenis Insiden',
-        2 => 'Unit',
+        2 => 'Status Korban',
     ];
     echo $form->field($model, 'berdasarkan')->dropDownList($listMethod,[
         'prompt' => 'Pilih Metode'
@@ -60,7 +60,7 @@ if(Yii::$app->request->isPost){
                 ?><th>Jenis Insiden</th><?php
             }
             else{
-                ?><th>Nama Unit</th><?php
+                ?><th>Status Korban</th><?php
             }
 
             if($model->periode == 1 || $model->periode == 2 || $model->periode == 6){
